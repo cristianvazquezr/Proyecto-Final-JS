@@ -19,10 +19,12 @@ class producto{
 
 // creo mi lista de productos
 
-let prod1=new producto(1,'arroz','legumbres','legu',20,200,'chinaso')
-let prod2=new producto(2,'arrozito','legumbres','legu',20,200,'chinaso')
-
-let listaProductos=[prod1,prod2]
+let listaProductos=[
+new producto(1,'arroz Gallo Oro','legumbres','saludables',200,200,'Arroz parbolizado x500gr'),
+new producto(2,'Galletas Diversion','galletas','golosinas',150,300,'Galletas dulces Diversion x200gr'),
+new producto(3,'Pan Integral','panaderia','TACC',100,2000,'pan integral marca Bimbo x300gr'),
+new producto(4,'Caramelos Sugus','Golocinas','caramelos',200000,150,'caramelos sugus masticables x15un'),
+]
 
 
 // guardo mis productos en el local storage, lo convierto a json. Tengo que validar, si ya existen productos en el localstorage no ejecuto esto, si esta vacio lo ejecuto para cargar mis productos iniciales que ya traigo. En el if pongo igual a [] por que cuando borro todos los items es lo que queda almacenado dos elementos que son los corchetes.
@@ -222,7 +224,7 @@ function subirCantidad(id,cantidad){
     listaProductos=JSON.parse(localStorage.getItem('producto'))
     for (let elemento in listaProductos){
         if (listaProductos[elemento].id==id){
-            listaProductos[elemento].subirStock(parseInt(cantidad));
+            listaProductos[elemento].cantidad = listaProductos[elemento].cantidad + parseInt(cantidad);
         }
     }
     localStorage.setItem('producto',JSON.stringify(listaProductos))
