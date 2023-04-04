@@ -116,7 +116,7 @@ function validarProducto(){
 
 function nuevosProductos(){
     if(validarProducto()==0){
-        let producto=crearProductos(atributtesList[0],atributtesList[1],atributtesList[2],atributtesList[3],atributtesList[4],atributtesList[5])
+        let producto=crearProductos(atributtesList[0],atributtesList[1],atributtesList[2],parseFloat(atributtesList[3]),parseInt(atributtesList[4]),atributtesList[5])
         listaProductos.push(producto)
     }
 }
