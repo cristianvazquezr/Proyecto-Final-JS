@@ -13,10 +13,10 @@
     <header>      
       <div class="container">
         <div class="row">
-          <h1 class="col-9">Tienda Virtual</h1>
-          <button type="button" class="btn btn-secondary col-1" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="left" data-bs-content="Left popover">
+          <h1 class="col-8">Tienda Virtual</h1>
+          <a type="button" class="btn btn-secondary col-2 administrar p-3" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="left" data-bs-content="Left popover" id="admin">
             Administrar
-          </button>
+          </a>
           <div class="dropdown col-1 p-3">
             <button class="btn dropdown-toggle" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false">
               <i class="fa-solid fa-user fa-beat fa-2xl" style="color: #1f4251;"></i>
@@ -26,9 +26,9 @@
               <li class="row">
                 <div class="input-group mb-3 col-8">
                   <span class="input-group-text" id="basic-addon1">@</span>
-                  <input type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
+                  <input id="login" type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
                 </div>
-                <button class="btn btn-secondary col-4" type="button">Login</button>
+                <button class="btn btn-secondary col-4" type="button" id="btnLogin">Login</button>
               </li>
             </ul>
           </div>

@@ -63,7 +63,11 @@ function btnComprar(listaProducto){
             idElementoComprar=parseInt((event.target.attributes.id.nodeValue).substring(7))
             let cantidadAcomprar=document.getElementById(`cantidadCompra${idElementoComprar}`).value
             if (cantidadAcomprar==0){
-                Swal.fire('agregue una cantidad distinta de cero!')
+                Swal.fire(
+                    {icon: 'error',
+                    title: 'Oops...',
+                    text:'agregue una cantidad distinta de cero!'}
+                )
             }
             else{
                 carritoCompra(idElementoComprar, listaProducto, cantidadAcomprar);
@@ -251,10 +255,55 @@ function modificarProducto(id,producto){
     })
 }
 
+// tomo el usuario y lo guardo en el session storage, con esto voy a permitir que se pueda entrar a la seccion administrar
+
+function loguearse(){
+    let usuario=document.getElementById('login')
+    let btnUsuario=document.getElementById('btnLogin')
+    let admin=document.getElementById('admin')
+    btnUsuario.onclick=()=>{
+        let user=usuario.value
+        if (user==''){
+            Swal.fire(
+                {icon: 'error',
+                title: 'Oops...',
+                text:'agregue una cantidad distinta de cero!'}
+            )
+        }
+        else{
+            sessionStorage.setItem('usuario',user)
+            admin.setAttribute('href', './paginas/formulario.html')
+            usuario.value=''
+
+        }
+    }
+
+}
+
+// corroborar login
+
+function chequeoLogin(){
+    let usuario= (sessionStorage.getItem('usuario'))
+    console.log(usuario)
+    if (usuario!=null){
+        let admin=document.getElementById('admin')
+        admin.setAttribute('href', './paginas/formulario.html')
+
+
+    }
+
+
+
+}
+
+
+
 function main(){
     consultaServer()
     consultarSSCarrito()
     actualizarItemsCarrito()
     finCompra()
+    loguearse()
+    chequeoLogin()
 }
 main()
