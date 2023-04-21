@@ -1,2 +1,5 @@
-# PreEntrega3-cristian-vazquez
-La idea final del proyecto es crear una tienda donde el usuario elija los productos que desea comprar y se agreguen al carrito de compras. Va haber una interfaz de administrador que va a ser donde se van a a editar los productos disponibles y la cantidad de stock de los mismos. En esta entrega solo se vaa poder ver la funcionalidad de agregar y eliminar productos asi como aumentar la cantidad de stock en la interfaz del formulario. En la seccion de index por el  momento solo se cargan los productos que se encuentran en mi local storage que se actualizan de acuerdo a lo que suceda en el el formulario de crud. 
+# EntregaFINAL-cristian-vazquez
+En el proyecto final hay dos secciones, una para crear, eliminar y modificar los elementos disponible del e-commerce y otra seccion donde se pueden agregar elementos al carrito, eliminarlos del carrito y finalizar la compra. 
+A su vez se pusieron restricciones como: no poder cargar al carrito si la cantidad indicada es cero, no poder elegir una cantidad mayor a la del stock y cuando se agrega al carrito se baje la cantidad en el stock. (mockapi.io no modifica los valores de los elementos pero la peticion se realiza corretamente).
+
+Para poder administrar los productos se debe loguear.

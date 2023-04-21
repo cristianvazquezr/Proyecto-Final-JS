@@ -1,13 +1,14 @@
 /*creo la clase producto que es la que me va permitir crear nuevos productos */
 class producto{
-    constructor(id,nombre,categoria,subcategoria,precio, cantidad,descripcion){
+    constructor(id,nombre,categoria,subcategoria,precio, cantidad,descripcion,imagen){
     this.id = id;
     this.nombre=nombre;
     this.categoria=categoria;
     this.subcategoria=subcategoria;
     this.descripcion=descripcion;
     this.precio=precio;
-    this.cantidad=cantidad;    
+    this.cantidad=cantidad;
+    this.imagen=imagen    
     }
     subirStock(ingresos){
         this.cantidad=this.cantidad+ingresos
@@ -17,24 +18,70 @@ class producto{
     }
 }
 
-// creo mi lista de productos
 
-let listaProductos=[
-new producto(1,'arroz Gallo Oro','legumbres','saludables',200,200,'Arroz parbolizado x500gr'),
-new producto(2,'Galletas Diversion','galletas','golosinas',150,300,'Galletas dulces Diversion x200gr'),
-new producto(3,'Pan Integral','panaderia','TACC',100,2000,'pan integral marca Bimbo x300gr'),
-new producto(4,'Caramelos Sugus','Golocinas','caramelos',200000,150,'caramelos sugus masticables x15un'),
-]
+// Creo la funcion para hacer la consulta GET a la base de datos.
 
+let listaProductos=[]
 
-// guardo mis productos en el local storage, lo convierto a json. Tengo que validar, si ya existen productos en el localstorage no ejecuto esto, si esta vacio lo ejecuto para cargar mis productos iniciales que ya traigo. En el if pongo igual a [] por que cuando borro todos los items es lo que queda almacenado dos elementos que son los corchetes.
-if(localStorage.getItem('producto')==null || localStorage.getItem('producto')== '[]' ){
-    let listaProductosJSON=JSON.stringify(listaProductos)
-    localStorage.setItem('producto', listaProductosJSON)
+function consultaProductosServer(){
+    fetch('https://643ac4e990cd4ba563012af5.mockapi.io/Articulos')
+        .then((response)=>response.json())
+        .then((respJSON)=>{
+            listaProductos=respJSON
+            actualizarProductos(listaProductos);
+            botonesEliminar();
+            botonesStock();
+        })
 }
-else{
-    listaProductos=JSON.parse(localStorage.getItem('producto'))
+consultaProductosServer()
+
+// Creo la funcion para hacer el post a la base de datos.
+
+
+function crearProductoServer(producto){
+    fetch('https://643ac4e990cd4ba563012af5.mockapi.io/Articulos',{
+        method:'POST',
+        body:JSON.stringify(producto),
+    })
+        .then((response)=>response.json())
+        .then((respJSON)=>{
+            listaProductos=respJSON
+            mensajeAddOk()
+            consultaProductosServer()
+        })
 }
+
+// Creo la funcion para modificar elemento de la base de datos.
+
+function modificarProductosServer(id,producto,cantidadAsubir){
+    fetch(`https://643ac4e990cd4ba563012af5.mockapi.io/Articulos/${id}`,{
+        method:'PUT',
+        body:JSON.stringify({producto}),
+    })
+        .then((response)=>response.json())
+        .then((respJSON)=>{
+            listaProductos=respJSON
+            mensajeStockOk(cantidadAsubir);
+            consultaProductosServer()
+        })
+}
+
+
+// Creo la funcion para eliminar elemento de la base de datos.
+
+function eliminarProductosServer(id){
+    fetch(`https://643ac4e990cd4ba563012af5.mockapi.io/Articulos/${id}`,{
+        method:'DELETE',
+    })
+        .then((response)=>response.json())
+        .then((respJSON)=>{
+            listaProductos=respJSON
+            mensajeDeleteOk();
+            consultaProductosServer()
+        })
+}
+
+
 
 // al ID lo genero de manera automatica validando siempre que no exista previamente.
 
@@ -53,8 +100,9 @@ function idGenerador(){
 /**Creo la funcion para crear productos */
 
 let id=idGenerador()
-function crearProductos(nombre,categoria,subcategoria,precio, cantidad,descripcion){
-    newProduct=new producto(id,nombre,categoria,subcategoria,precio, cantidad,descripcion)
+function crearProductos(nombre,categoria,subcategoria,precio, cantidad,descripcion,imagen){
+    
+    newProduct=new producto(id,nombre,categoria,subcategoria,precio, cantidad,descripcion,imagen)
     return newProduct
 }
 
@@ -75,6 +123,7 @@ let subcategory=''
 let price=''
 let stock=''
 let description=''
+let imagen=''
 let atributtesList=[]
 
 function obtenerElementos(){
@@ -84,9 +133,10 @@ function obtenerElementos(){
     price=document.getElementById('precio')
     stock=document.getElementById('cantidad')
     description=document.getElementById('descripcion')
+    imagen=document.getElementById('imagen')
 
-    // creo una lista de estos elementos para manejarlos de manera mas facil
-    atributtesList=[productName.value,category.value,subcategory.value,price.value,stock.value,description.value]
+// creo una lista de estos elementos para manejarlos de manera mas facil
+ atributtesList=[productName.value,category.value,subcategory.value,price.value,stock.value,description.value,imagen.value]
 
     
 }
@@ -95,7 +145,6 @@ let buttonAdd=document.getElementById('boton')
 let formProduct=document.getElementById('formulario')
 idNumber.value=id
 
-console.log(atributtesList)
 
 //Tengo que validar que todos los parametros no esten vacios. para evitar errores al crear el objeto.
 
@@ -103,12 +152,12 @@ function validarProducto(){
     // pongo un contador para que si es mayor a 0 al finalizar el ciclo for arroje la alerta.
     let contador=0
     atributtesList.forEach((elemento)=>{
-        if(elemento=='Producto' || elemento=='Categoria' ||  elemento=='Subcategoria' || elemento=='Descripción del producto' || elemento.value==''){
+        if(elemento=='imagen del producto (link)' || elemento=='Producto' || elemento=='Categoria' ||  elemento=='Subcategoria' || elemento=='Descripción del producto' || elemento.value==''){
             contador+=1
         }
     })
     if(contador!=0){
-        alert("complete todos los campos antes de continuar")
+        Swal.fire('complete todos los campos antes de continuar');
     }
     return contador
 }
@@ -116,10 +165,13 @@ function validarProducto(){
 
 function nuevosProductos(){
     if(validarProducto()==0){
-        let producto=crearProductos(atributtesList[0],atributtesList[1],atributtesList[2],parseFloat(atributtesList[3]),parseInt(atributtesList[4]),atributtesList[5])
-        listaProductos.push(producto)
+        let producto=crearProductos(atributtesList[0],atributtesList[1],atributtesList[2],parseFloat(atributtesList[3]),parseInt(atributtesList[4]),atributtesList[5],atributtesList[6])
+        
+        crearProductoServer(producto);
     }
 }
+
+
 
 // agrego la funcion para que no actualice pagina al hacer click en el boton
 
@@ -135,48 +187,126 @@ let botonEliminar=document.getElementsByClassName('eliminarProducto')
 let botonStock=document.getElementsByClassName('aumentarStock')
 
 
-let productList=null
 
-
-function actualizarProductos(){
+function actualizarProductos(listaProductos){
     cardForm.innerHTML = null
-    productList=JSON.parse(localStorage.getItem('producto'))
-    for(const i in productList){
-        cardForm.innerHTML += `<div class="card col-3" id="${productList[i].id}" style="width: 18rem;"> <img src="../imagen/imagenDefault.jpg" class="card-img-top" alt="..."> <div class="card-body"><h5 class="card-title">Nombre</h5><p class="card-text">${productList[i].nombre}</p><h5 class="card-title">cantidad</h5><p class="card-title">${productList[i].cantidad}</p><h5 class="card-title">Descripción</h5><p class="card-text">${productList[i].descripcion}</p><input class="form-control" type="number" name="idProducto" id="cantidad${productList[i].id}" size="100" value=0 ><div class="row p-3"><div class="col"><a class="btn btn-primary eliminarProducto mg-3" id=eliminar${productList[i].id}>eliminar</a></div><div class="col"><a class="btn btn-primary aumentarStock mg-3" id=stock${productList[i].id}> ↑ Stock</a></div></div></div></div>`
+    for(const i in listaProductos){
+        cardForm.innerHTML += 
+            `<div class="card col-3" id="${listaProductos[i].id}" style="width: 18rem;">
+                <img src=${listaProductos[i].imagen}  class="card-img-top" alt="..."> 
+                <div class="card-body">
+                    <h5 class="card-title">Nombre</h5>
+                    <p class="card-text">${listaProductos[i].nombre}</p>
+                    <h5 class="card-title">cantidad</h5>
+                    <p class="card-title">${listaProductos[i].cantidad}</p>
+                    <h5 class="card-title">Descripción</h5><p class="card-text">${listaProductos[i].descripcion}</p>
+                    <input class="form-control" type="number" name="idProducto" id="cantidad${listaProductos[i].id}" size="100" value=0 >
+                    <div class="row p-3">
+                        <div class="col">
+                            <a class="btn btn-primary eliminarProducto mg-3" id=eliminar${listaProductos[i].id}>eliminar</a>
+                        </div>
+                        <div class="col">
+                            <a class="btn btn-primary aumentarStock mg-3" id=stock${listaProductos[i].id}> ↑ Stock</a>
+                        </div>
+                    </div>
+                </div>
+            </div>`
     }
     botonesEliminar();
     botonesStock();
 }
 
+// creo funcion para notificacion de agregado Ok de producto
+function mensajeAddOk(){
+    Toastify({
+        text: "El producto se agregó con éxito",
+        className: "info",
+        style: {
+        background: "linear-gradient(to right, #00b09b, #96c93d)",
+        }
+    }).showToast();
+}
 
+// creo funcion para notificacion de elimino Ok de producto
+function mensajeDeleteOk(){
+    Toastify({
+        text: "El producto se eliminó con éxito",
+        className: "info",
+        style: {
+        background: "linear-gradient(to right, red, red)",
+        }
+    }).showToast();
+}
 
-// llamo la funcion actualizar producto para que agregue las card del local storage
+// creo funcion para notificacion de aumento Ok de stock
+function mensajeStockOk(unidades){
+    Toastify({
+        text: `Se agregaron ${unidades} unidades con éxito`,
+        className: "info",
+        style: {
+        background: "linear-gradient(to right, #00b09b, #96c93d)",
+        }
+    }).showToast();
+}
 
-actualizarProductos()
+// creo funcion para preguntar si es correcto eliminar el producto
+function confirmarDelete(idElementoEliminar){
+    const swalWithBootstrapButtons = Swal.mixin({
+        customClass: {
+          confirmButton: 'btn btn-success',
+          cancelButton: 'btn btn-danger'
+        },
+        buttonsStyling: false
+      })
+      
+      swalWithBootstrapButtons.fire({
+        title: 'Esta seguro que desea eliminar el siguiente producto?',
+        text: "Si lo elimina no se podrá volver atras",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'SI, eliminar!',
+        cancelButtonText: 'No, cancelar!',
+        reverseButtons: true
+      }).then((result) => {
+        if (result.isConfirmed) {
+            eliminarProductos(idElementoEliminar);;
+          swalWithBootstrapButtons.fire(
+            'Eliminado!',
+            'El producto fue eliminado',
+            'Correcto'
+          )
+        } else if (
+          /* Read more about handling dismissals below */
+          result.dismiss === Swal.DismissReason.cancel
+        ) {
+          swalWithBootstrapButtons.fire(
+            'Cancelado',
+            'El producto esta a salvo :)',
+            'error'
+          )
+        }
+      })
+}
+
 
 // Al hacer click sobre boton creo el objeto y valido que todos los atributos tengan datos
 buttonAdd.onclick = () =>{
     obtenerElementos();
-    nuevosProductos();
     id=idGenerador();
     idNumber.value=id;
-    listaProductosJSON=JSON.stringify(listaProductos);
-    localStorage.setItem('producto', listaProductosJSON);
-    actualizarProductos();
-    botonesEliminar();
-    botonesStock();
+    nuevosProductos();
+
 }
 
 // agrego la funcion para eliminar productos cuando presiono el boton elminar. Primero debo determinar el ID del elemento que deseo eliminar. por eso creo el evento onclick para obtener el ID del boton que es el mismo ID del producto como objeto. Lo tengo que meter dentro de una funcion, para que cuando yo actualice mi lista de productos se cree el evento on click sobre cada uno de los botones 'eliminar'
 
 function botonesEliminar(){
-    botonEliminar=document.getElementsByClassName('eliminarProducto')
+    let botonEliminar=document.getElementsByClassName('eliminarProducto')
     let idElementoEliminar=null
     for (i in botonEliminar){
         botonEliminar[i].onclick=(event)=>{
             idElementoEliminar=parseInt((event.target.attributes.id.nodeValue).substring(8))
-            eliminarProductos(idElementoEliminar);
-            actualizarProductos();
+            confirmarDelete(idElementoEliminar);
         }
     }
 }
@@ -184,61 +314,41 @@ function botonesEliminar(){
 // agrego la funcion para subir stock cuando presiono el boton stock. Primero debo determinar el ID del elemento que deseo modificar. por eso creo el evento onclick para obtener el ID del boton que es el mismo ID del producto como objeto. Lo tengo que meter dentro de una funcion, para que cuando yo actualice mi lista de productos se cree el evento on click sobre cada uno de los botones 'subir stock'. en este caso como yo modifico el input que es el stock que quiero agregar, tengo que crear el evento change para el input
 
 function botonesStock(){
-    botonStock=document.getElementsByClassName('aumentarStock')
+    let botonStock=document.getElementsByClassName('aumentarStock')
     let idElementoSubirStock=null
     for (i in botonStock){
         botonStock[i].onclick=(event)=>{
             idElementoSubirStock=parseInt((event.target.attributes.id.nodeValue).substring(5))
             let cantidadAsubir=document.getElementById(`cantidad${idElementoSubirStock}`).value
-            console.log(cantidadAsubir)
             subirCantidad(idElementoSubirStock,cantidadAsubir);
-            actualizarProductos();
         }
     }
 }
-  
-  
-
 
 
 // En la card donde esta el producto a eliminar puse de id del elemento html el id del producto para eleminarlo. por eso busco el ID del elemento HTML
 
-//let idCardDelete=document.getElementById('eliminarProducto').parentNode.parentNode.id
 
-
-// funcion eliminar objeto de la lista de objetos. traigo la lista del localstorage. Busco el ID del objeto dentro de la lista y luego vuelvo a guardar en el local storage.
+// funcion eliminar objeto de la lista de objetos. traigo la lista del server. Busco el ID del objeto dentro de la lista y luego vuelvo a guardar en el local storage.
 
 function eliminarProductos(id){
-    listaProductos=JSON.parse(localStorage.getItem('producto'))
     for (let elemento in listaProductos){
         if (listaProductos[elemento].id==id){
-            listaProductos.splice(elemento,1);
+            eliminarProductosServer(id);
         }
     }
-    localStorage.setItem('producto',JSON.stringify(listaProductos))
+    
 }
 
-// funcion subir stock de objetos. traigo la lista del localstorage. Busco el ID del objeto dentro de la lista y luego vuelvo a guardar en el local storage.
+// funcion subir stock de objetos. traigo la lista del server. Busco el ID del objeto dentro de la lista y luego vuelvo a guardar en el server.
 
 function subirCantidad(id,cantidad){
-    listaProductos=JSON.parse(localStorage.getItem('producto'))
+    let productoModificado=''
     for (let elemento in listaProductos){
         if (listaProductos[elemento].id==id){
-            listaProductos[elemento].cantidad = listaProductos[elemento].cantidad + parseInt(cantidad);
+            listaProductos[elemento].cantidad = parseFloat(listaProductos[elemento].cantidad) + parseFloat(cantidad);
+            productoModificado=listaProductos[elemento]
         }
     }
-    localStorage.setItem('producto',JSON.stringify(listaProductos))
+    modificarProductosServer(id,productoModificado,cantidad)
 }
-
-
-// evento change para el input de stock
-
-/**function cantidadStock(id){
-    let cantidadAumentada=null
-    let inputStock=document.getElementById(id)
-    inputStock.addEventListener('change',(event)=>{
-        cantidadAumentada=event.target.value
-        
-    })
-    return cantidadAumentada
-}*/

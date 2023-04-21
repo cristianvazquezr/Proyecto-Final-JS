@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 </head>
 <body>
@@ -33,6 +34,8 @@
                             <input class="form-control" type="number" name="cantidad" id="cantidad" size="50" value=0>
                             <label for="descripcion">Descripción</label>
                             <textarea class="form-control" name="descripcion" id="descripcion">Descripción del producto</textarea>
+                            <label for="imagen">Imagen</label>
+                            <input class="form-control" type="url" name="imagen" id="imagen" size="50" value='imagen del producto (link)'>
                             <button id="boton" class="btn btn-primary gitboton boton--hidden" type="submit" name="crear" value="Agregar Producto">Agregar</button>
                         </div>
                     </div>
@@ -46,6 +49,9 @@
     <footer>
 
     </footer>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../formulario.js"></script>
 </body>
-<script src="../formulario.js"></script>
+
 </html>
